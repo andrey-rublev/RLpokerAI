@@ -320,7 +320,8 @@ def detect_card_from_image(image: np.ndarray, **kwargs):
 
 if __name__ == "__main__":
     # simple CLI behavior remains for quick testing
-    image_path = r"C:\Users\nikhi\Downloads\RLpoker\RLpokerAI\Data\Images\Images\2s1.jpg"
+    image_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                             "Data", "Images", "Images", "2s1.jpg")
     res = detect_and_get_top_left(image_path, show=True, debug=True)
     if res is None:
         print("No card detected.")

@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Generated template files (built by build_templates.py)
+Data/templates/card_overlays/
+
+# Debug output
+Data/tests/debug_output/
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
