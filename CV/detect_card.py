@@ -114,7 +114,8 @@ def detect_and_get_top_left(image_path,
                           target_size=(64, 96),
                           show: bool = False,
                           save_path: str = None,
-                          debug: bool = False):
+                          debug: bool = False,
+                          _image: np.ndarray = None):
     """Detect card in the image using curved edge detection, straighten it, and return the top-left outline crop.
 
     Uses edge detection and contour analysis to find the card's curved boundary (rounded corners).
@@ -129,7 +130,7 @@ def detect_and_get_top_left(image_path,
     If debug is True, prints contour info to help diagnose detection issues.
     """
     # If the image path doesn't exist, try to resolve common mistakes
-    if not os.path.exists(image_path):
+    if image_path is not None and not os.path.exists(image_path):
         # Try same basename with common extensions in the Data images folder
         base = os.path.splitext(os.path.basename(image_path))[0]
         # common folders to search (relative to repo)
@@ -162,16 +163,18 @@ def detect_and_get_top_left(image_path,
                 print(f"Image path not found; using '{found}' instead of '{image_path}'")
             image_path = found
 
-    image = cv2.imread(image_path)
-    if image is None:
-        # Provide a clearer error message listing nearby files for debugging
-        parent = os.path.dirname(image_path) or os.getcwd()
-        sample = []
-        try:
-            sample = [os.path.basename(p) for p in glob.glob(os.path.join(parent, '*'))][:20]
-        except Exception:
+    if _image is not None:
+        image = _image
+    else:
+        image = cv2.imread(image_path)
+        if image is None:
+            parent = os.path.dirname(image_path) or os.getcwd()
             sample = []
-        raise FileNotFoundError(f"Image not found: {image_path}. Nearby files: {sample}")
+            try:
+                sample = [os.path.basename(p) for p in glob.glob(os.path.join(parent, '*'))][:20]
+            except Exception:
+                sample = []
+            raise FileNotFoundError(f"Image not found: {image_path}. Nearby files: {sample}")
     original = image.copy()
     h, w = image.shape[:2]
 
@@ -308,6 +311,11 @@ def detect_and_get_top_left(image_path,
         "overlay_bgr": bw_overlay_resized_bgr,
         "overlay_large": overlay_large,
     }
+
+
+def detect_card_from_image(image: np.ndarray, **kwargs):
+    """Convenience wrapper: run detect_and_get_top_left on a BGR numpy array."""
+    return detect_and_get_top_left(None, _image=image, **kwargs)
 
 
 if __name__ == "__main__":
